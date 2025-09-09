@@ -1,3 +1,4 @@
+import EnhancedAIChat from './EnhancedAIChat';
 import Events from './Events';
 import AIChat from './AIChat';
 import React, { useState } from 'react';
@@ -34,7 +35,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       case 'events':
         return <Events />;
       case 'ai':
-        return <AIChat />;
+        return <EnhancedAIChat />;
       default:
         return (
           <Container maxWidth="lg" sx={{ mt: 4 }}>

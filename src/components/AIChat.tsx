@@ -31,26 +31,69 @@ const AIChat: React.FC = () => {
 
     const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
     setInput('');
     setLoading(true);
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`, {
+      // Build conversation history for context
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      }));
+
+      // Add current user message
+      conversationHistory.push({
+        role: 'user',
+        parts: [{ text: currentInput }]
+      });
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          contents: [{
+          systemInstruction: {
             parts: [{
-              text: `You are Parsley AI, an assistant for a membership management platform. Help with membership-related questions. User question: ${input}`
+              text: `You are Parsley AI, an intelligent assistant for a membership management platform. You help with:
+              
+              - Member management and engagement strategies
+              - Event planning and organization
+              - Membership growth and retention
+              - Association best practices
+              - Technology and platform guidance
+              - Analytics and reporting insights
+              
+              INFORMATION GUIDELINES:
+              - You can discuss publicly known information about well-known figures, companies, or organizations from your training data
+              - For specific or recent information not in your training, clearly state "I don't have current information about..." and suggest where they might find it
+              - NEVER make up or invent facts - if uncertain, be honest about limitations
+              - When asked about private organizational details (like internal company founders), explain you don't have access to private data
+              - For publicly known founders of major companies or organizations, you can share general biographical information if it's well-established
+              - Always distinguish between what you know from training vs. what would require current web search
+              
+              Example responses:
+              - "I don't have current information about [specific person]. You might try searching LinkedIn, company websites, or news sources."
+              - "From my training data, [well-known person] is known for... but for current information, I'd recommend checking recent sources."
+              
+              Be helpful and honest about both your capabilities and limitations.`
             }]
-          }]
+          },
+          contents: conversationHistory,
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+          }
         })
       });
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        const errorData = await response.text();
+        console.error('API error details:', errorData);
+        throw new Error(`API error: ${response.status} - ${errorData}`);
       }
 
       const data = await response.json();
@@ -61,7 +104,7 @@ const AIChat: React.FC = () => {
       console.error('Error calling Gemini API:', error);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: 'Sorry, I\'m having trouble connecting right now. Please check your API key and try again.' 
+        content: `I'm having trouble connecting right now. Error: ${error.message}. Please check your API key and try again.` 
       }]);
     }
     
