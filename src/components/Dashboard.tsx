@@ -1,3 +1,5 @@
+import Events from './Events';
+import AIChat from './AIChat';
 import React, { useState } from 'react';
 import { 
   AppBar, 
@@ -30,9 +32,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       case 'members':
         return <Members />;
       case 'events':
-        return <Typography variant="h4" sx={{ mt: 4 }}>Events (Coming Soon)</Typography>;
+        return <Events />;
       case 'ai':
-        return <Typography variant="h4" sx={{ mt: 4 }}>AI Assistant (Coming Soon)</Typography>;
+        return <AIChat />;
       default:
         return (
           <Container maxWidth="lg" sx={{ mt: 4 }}>
