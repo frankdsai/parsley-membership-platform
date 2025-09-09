@@ -1,15 +1,25 @@
 import React from 'react';
-import './App.css';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Auth from './components/Auth';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4caf50', // Green theme for Parsley
+    },
+    secondary: {
+      main: '#81c784',
+    },
+  },
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>🌿 Parsley</h1>
-        <p>AI-Enhanced Membership Platform</p>
-        <p>Ready for development!</p>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Auth />
+    </ThemeProvider>
   );
 }
 

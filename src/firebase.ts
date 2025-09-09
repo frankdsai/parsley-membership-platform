@@ -3,13 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSybtJuEHg557z9fgryFSuYMeQ8rKinYXEK4",
+  apiKey: "AIzaSyDtJuEHg557z9fgryFSuYMeQ8rKinYXEK4",
   authDomain: "parsley-membership-platform.firebaseapp.com",
   projectId: "parsley-membership-platform",
   storageBucket: "parsley-membership-platform.firebasestorage.app",
   messagingSenderId: "943856613574",
-  appId: "1:943856613574:web:60878b73636874cf82bf67",
-  measurementId: "G-VSTY5SSMZ4"
+  appId: "1:943856613574:web:60878b73636874cf82bf67"
 };
 
 const app = initializeApp(firebaseConfig);
