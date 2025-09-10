@@ -37,12 +37,16 @@ import {
   BusinessCenter
 } from '@mui/icons-material';
 import EnhancedAIChat from './EnhancedAIChat';
+import Members from './Members';
+import Events from './Events';
 
 const ModernDashboard = () => {
   const [selectedTab, setSelectedTab] = useState('feed');
 
   const sidebarItems = [
     { id: 'feed', icon: <Dashboard />, label: 'Feed', active: true },
+    { id: 'members', icon: <People />, label: 'Members' },
+    { id: 'events', icon: <Event />, label: 'Events' },
     { id: 'priorities', icon: <TrendingUp />, label: 'Your Priorities' },
     { id: 'goals', icon: <Psychology />, label: 'Your Goals' },
     { id: 'review', icon: <BusinessCenter />, label: 'For Review' },
@@ -64,7 +68,15 @@ const ModernDashboard = () => {
 
   const renderMainContent = () => {
     if (selectedTab === 'chat') {
-      return <EnhancedAIChat />;
+        return <EnhancedAIChat />;
+    }
+  
+    if (selectedTab === 'members') {
+        return <Members />;
+    }
+  
+    if (selectedTab === 'events') {
+        return <Events />;
     }
 
     return (
