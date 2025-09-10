@@ -228,7 +228,7 @@ const EnhancedAIChat: React.FC = () => {
       console.error('Error calling Gemini API:', error);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: `I'm having trouble connecting right now. Error: ${error.message}. Please try again.` 
+        content: `I'm having trouble connecting right now. Error: ${error instanceof Error ? error.message : String(error)}. Please try again.` 
       }]);
     }
     
