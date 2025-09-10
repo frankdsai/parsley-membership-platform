@@ -6,11 +6,20 @@ import Auth from './components/Auth';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4caf50', // Green theme for Parsley
+      main: '#3b82f6', // Modern blue
     },
     secondary: {
-      main: '#81c784',
+      main: '#10b981', // Modern green
     },
+    background: {
+      default: '#f8fafc',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif',
+  },
+  shape: {
+    borderRadius: 12,
   },
 });
 
