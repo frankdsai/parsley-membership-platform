@@ -15,39 +15,26 @@ import {
   Chip,
   Avatar,
   IconButton,
-  InputAdornment
+  InputAdornment,
+  LinearProgress,
+  Divider
 } from '@mui/material';
 import {
   Add,
   Search,
-  Person,
-  Business,
-  Work,
   Delete,
-  Edit
+  Visibility,
+  LocationOn,
+  Work
 } from '@mui/icons-material';
-import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase';
-
-interface Member {
-  id: string;
-  name: string;
-  email: string;
-  company: string;
-  role: string;
-  joinDate: string;
-}
+import { UserProfile } from '../types/user';
 
 const Members: React.FC = () => {
-  const [members, setMembers] = useState<Member[]>([]);
+  const [members, setMembers] = useState<UserProfile[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMember, setSelectedMember] = useState<UserProfile | null>(null);
   const [open, setOpen] = useState(false);
-  const [newMember, setNewMember] = useState({
-    name: '',
-    email: '',
-    company: '',
-    role: ''
-  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchMembers();
@@ -55,284 +42,323 @@ const Members: React.FC = () => {
 
   const fetchMembers = async () => {
     try {
-      const q = query(collection(db, 'members'), orderBy('joinDate', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const membersList: Member[] = [];
-      querySnapshot.forEach((doc) => {
-        membersList.push({ id: doc.id, ...doc.data() } as Member);
-      });
-      setMembers(membersList);
+      // Create enhanced sample data
+      const sampleMembers: UserProfile[] = [
+        {
+          uid: 'member-1',
+          email: 'sarah.chen@techcorp.com',
+          role: 'member',
+          displayName: 'Sarah Chen',
+          organization: 'TechCorp Solutions',
+          joinDate: new Date().toISOString(),
+          lastActive: new Date().toISOString(),
+          skills: ['Product Management', 'AI/ML Strategy', 'Team Leadership'],
+          expertise: ['Artificial Intelligence', 'Product Strategy', 'Market Research'],
+          interests: ['Emerging Technologies', 'Startup Mentoring', 'Design Thinking'],
+          bio: 'Senior Product Manager with 8+ years experience in AI-driven products. Passionate about building user-centric solutions that leverage cutting-edge technology.',
+          linkedinUrl: 'https://linkedin.com/in/sarahchen',
+          goals: ['Launch AI product line', 'Expand into European markets', 'Build strategic partnerships'],
+          yearsExperience: 8,
+          industry: 'Technology',
+          location: 'San Francisco, CA',
+          profileCompleteness: 95,
+          expertiseLevel: 'Expert',
+          networkingPreferences: ['1:1 Coffee Chats', 'Industry Events', 'Mentoring'],
+          searchHistory: ['AI product strategy', 'market research techniques', 'team leadership'],
+          connectionsMade: 23,
+          eventsAttended: 12
+        },
+        {
+          uid: 'member-2',
+          email: 'alex.rodriguez@innovate.com',
+          role: 'member',
+          displayName: 'Alex Rodriguez',
+          organization: 'Innovate Labs',
+          joinDate: new Date().toISOString(),
+          lastActive: new Date().toISOString(),
+          skills: ['Software Engineering', 'Cloud Architecture', 'DevOps'],
+          expertise: ['Backend Development', 'System Design', 'Kubernetes'],
+          interests: ['Open Source', 'Cloud Computing', 'Automation'],
+          bio: 'Full-stack engineer and cloud architect specializing in scalable microservices. Active contributor to open source projects.',
+          goals: ['Become solutions architect', 'Contribute to major OSS project', 'Speaking at conferences'],
+          yearsExperience: 5,
+          industry: 'Technology',
+          location: 'Austin, TX',
+          profileCompleteness: 78,
+          expertiseLevel: 'Intermediate',
+          networkingPreferences: ['Tech Meetups', 'Open Source Communities'],
+          searchHistory: ['kubernetes best practices', 'microservices architecture'],
+          connectionsMade: 15,
+          eventsAttended: 8
+        },
+        {
+          uid: 'member-3',
+          email: 'maria.gonzalez@digitalfin.com',
+          role: 'member',
+          displayName: 'Maria Gonzalez',
+          organization: 'Digital Finance Co',
+          joinDate: new Date().toISOString(),
+          lastActive: new Date().toISOString(),
+          skills: ['Financial Analysis', 'Risk Management', 'Digital Transformation'],
+          expertise: ['FinTech Innovation', 'Regulatory Compliance', 'Data Analytics'],
+          interests: ['Blockchain', 'Digital Banking', 'Financial Inclusion'],
+          bio: 'Fintech strategist driving digital transformation in traditional banking. Expert in regulatory technology and risk management.',
+          goals: ['Lead digital banking initiative', 'Become fintech thought leader', 'Launch financial inclusion program'],
+          yearsExperience: 12,
+          industry: 'Financial Services',
+          location: 'New York, NY',
+          profileCompleteness: 88,
+          expertiseLevel: 'Thought Leader',
+          networkingPreferences: ['Industry Conferences', 'Executive Roundtables'],
+          searchHistory: ['blockchain regulations', 'digital banking trends', 'fintech partnerships'],
+          connectionsMade: 34,
+          eventsAttended: 18
+        }
+      ];
+      
+      setMembers(sampleMembers);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching members:', error);
+      setLoading(false);
     }
   };
 
-  const handleAddMember = async () => {
-    if (!newMember.name.trim() || !newMember.email.trim() || !newMember.company.trim() || !newMember.role.trim()) {
-      alert('Please fill in all fields');
-      return;
-    }
-
-    try {
-      const docRef = await addDoc(collection(db, 'members'), {
-        ...newMember,
-        joinDate: new Date().toISOString()
-      });
-      console.log('Member added successfully with ID:', docRef.id);
-      setNewMember({ name: '', email: '', company: '', role: '' });
-      setOpen(false);
-      fetchMembers();
-    } catch (error) {
-      console.error('Error adding member:', error);
-      alert('Error adding member: ' + error);
-    }
-  };
-
-  const handleDeleteMember = async (memberId: string) => {
+  const handleDeleteMember = (memberId: string) => {
     if (window.confirm('Are you sure you want to delete this member?')) {
-      try {
-        await deleteDoc(doc(db, 'members', memberId));
-        fetchMembers();
-      } catch (error) {
-        console.error('Error deleting member:', error);
-      }
+      setMembers(members.filter(m => m.uid !== memberId));
     }
   };
 
   const filteredMembers = members.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.role.toLowerCase().includes(searchTerm.toLowerCase())
+    member.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.organization?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.expertise?.some(exp => exp.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    member.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const getExpertiseLevelColor = (level: string) => {
+    switch (level) {
+      case 'Thought Leader': return '#8b5cf6';
+      case 'Expert': return '#10b981';
+      case 'Intermediate': return '#3b82f6';
+      default: return '#64748b';
+    }
+  };
+
+ // If a member is selected, show basic info (detailed profile coming soon)
+if (selectedMember) {
   return (
-    <Box sx={{ p: 4, backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-      <Container maxWidth="lg">
-        {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
-            Member Directory
-          </Typography>
-          <Typography variant="body1" sx={{ color: '#64748b' }}>
-            Manage your organization's member directory and engagement
-          </Typography>
-        </Box>
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Button 
+        onClick={() => setSelectedMember(null)}
+        sx={{ mb: 3 }}
+        variant="outlined"
+      >
+        ← Back to Members
+      </Button>
+      <Typography variant="h4" sx={{ mb: 2 }}>
+        {selectedMember.displayName}
+      </Typography>
+      <Typography variant="body1">
+        Enhanced profile view coming soon!
+      </Typography>
+    </Container>
+  );
+}
 
-        {/* Controls */}
-        <Card sx={{ borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none', mb: 3 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-              <TextField
-                placeholder="Search members..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                size="small"
-                sx={{ 
-                  flexGrow: 1, 
-                  minWidth: 300,
-                  '& .MuiOutlinedInput-root': { borderRadius: 2 }
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search fontSize="small" sx={{ color: '#64748b' }} />
-                    </InputAdornment>
-                  )
-                }}
-              />
-              <Button 
-                variant="contained" 
-                startIcon={<Add />}
-                onClick={() => setOpen(true)}
-                sx={{ 
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  fontWeight: 600
-                }}
-              >
-                Add Member
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
+  // Loading state
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Typography variant="h6" sx={{ textAlign: 'center' }}>
+          Loading members...
+        </Typography>
+      </Container>
+    );
+  }
 
-        {/* Members Grid */}
-        <Grid container spacing={3}>
-          {filteredMembers.map((member) => (
-            <Grid item xs={12} sm={6} md={4} key={member.id}>
-              <Card sx={{ 
+  // Main members list view
+  return (
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+          Member Directory
+        </Typography>
+        <Button 
+          variant="contained" 
+          startIcon={<Add />}
+          onClick={() => setOpen(true)}
+          sx={{ borderRadius: 2, textTransform: 'none' }}
+        >
+          Add Member
+        </Button>
+      </Box>
+
+      <TextField
+        fullWidth
+        placeholder="Search members by name, organization, skills, or expertise..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{ mb: 3 }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Search sx={{ color: '#64748b' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
+
+      <Grid container spacing={3}>
+        {filteredMembers.map((member) => (
+          <Grid item xs={12} md={6} lg={4} key={member.uid}>
+            <Card 
+              sx={{ 
                 borderRadius: 3, 
                 border: '1px solid #e2e8f0', 
                 boxShadow: 'none',
                 transition: 'all 0.2s ease-in-out',
                 '&:hover': {
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  transform: 'translateY(-2px)'
+                  borderColor: '#3b82f6',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 25px -8px rgba(0,0,0,0.1)'
                 }
-              }}>
-                <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-                    <Avatar sx={{ 
-                      width: 48, 
-                      height: 48, 
-                      backgroundColor: '#3b82f6',
-                      fontSize: '1.1rem',
-                      fontWeight: 600
-                    }}>
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </Avatar>
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                  <Avatar sx={{ 
+                    width: 56, 
+                    height: 56, 
+                    backgroundColor: '#3b82f6',
+                    fontSize: '1.25rem',
+                    fontWeight: 600
+                  }}>
+                    {member.displayName?.[0] || member.email[0]}
+                  </Avatar>
+                  
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 0.5 }}>
+                      {member.displayName}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#64748b' }}>
+                      {member.organization}
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', gap: 0.5 }}>
                     <IconButton 
-                      size="small" 
-                      onClick={() => handleDeleteMember(member.id)}
+                      size="small"
+                      onClick={() => setSelectedMember(member)}
+                      sx={{ color: '#3b82f6' }}
+                    >
+                      <Visibility />
+                    </IconButton>
+                    <IconButton 
+                      size="small"
+                      onClick={() => handleDeleteMember(member.uid)}
                       sx={{ color: '#ef4444' }}
                     >
-                      <Delete fontSize="small" />
+                      <Delete />
                     </IconButton>
                   </Box>
-                  
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 0.5 }}>
-                    {member.name}
-                  </Typography>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Person fontSize="small" sx={{ color: '#64748b', mr: 1 }} />
-                    <Typography variant="body2" sx={{ color: '#64748b' }}>
-                      {member.email}
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Business fontSize="small" sx={{ color: '#64748b', mr: 1 }} />
-                    <Typography variant="body2" sx={{ color: '#64748b' }}>
-                      {member.company}
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Work fontSize="small" sx={{ color: '#64748b', mr: 1 }} />
-                    <Typography variant="body2" sx={{ color: '#64748b' }}>
-                      {member.role}
-                    </Typography>
-                  </Box>
-                  
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                   <Chip 
-                    label={`Joined ${new Date(member.joinDate).toLocaleDateString()}`}
-                    size="small" 
+                    label={member.expertiseLevel} 
+                    size="small"
                     sx={{ 
-                      backgroundColor: '#f0fdf4',
-                      color: '#166534',
-                      fontSize: '0.75rem',
-                      fontWeight: 500
-                    }} 
+                      backgroundColor: getExpertiseLevelColor(member.expertiseLevel) + '20',
+                      color: getExpertiseLevelColor(member.expertiseLevel),
+                      fontWeight: 600
+                    }}
                   />
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                  <Chip 
+                    icon={<LocationOn />} 
+                    label={member.location} 
+                    size="small" 
+                    variant="outlined"
+                  />
+                </Box>
 
-        {/* Empty State */}
-        {filteredMembers.length === 0 && (
-          <Card sx={{ borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none', mt: 3 }}>
-            <CardContent sx={{ p: 6, textAlign: 'center' }}>
-              <Person sx={{ fontSize: 48, color: '#64748b', mb: 2 }} />
-              <Typography variant="h6" sx={{ color: '#1e293b', mb: 1 }}>
-                {searchTerm ? 'No members found' : 'No members yet'}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#64748b', mb: 3 }}>
-                {searchTerm 
-                  ? 'Try adjusting your search terms'
-                  : 'Get started by adding your first member to the directory'
-                }
-              </Typography>
-              {!searchTerm && (
-                <Button 
-                  variant="contained" 
-                  startIcon={<Add />}
-                  onClick={() => setOpen(true)}
-                >
-                  Add First Member
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                <Typography variant="body2" sx={{ color: '#1e293b', mb: 2, lineHeight: 1.5 }}>
+                  {member.bio && member.bio.length > 100 ? `${member.bio.substring(0, 100)}...` : member.bio}
+                </Typography>
 
-        {/* Add Member Dialog */}
-        <Dialog 
-          open={open} 
-          onClose={() => setOpen(false)} 
-          maxWidth="sm" 
-          fullWidth
-          PaperProps={{
-            sx: { borderRadius: 3 }
-          }}
-        >
-          <DialogTitle sx={{ 
-            fontSize: '1.25rem', 
-            fontWeight: 600, 
-            color: '#1e293b',
-            borderBottom: '1px solid #e2e8f0'
-          }}>
-            Add New Member
-          </DialogTitle>
-          <DialogContent sx={{ pt: 3 }}>
-            <TextField
-              fullWidth
-              label="Full Name"
-              value={newMember.name}
-              onChange={(e) => setNewMember({...newMember, name: e.target.value})}
-              margin="normal"
-              required
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-            />
-            <TextField
-              fullWidth
-              label="Email Address"
-              type="email"
-              value={newMember.email}
-              onChange={(e) => setNewMember({...newMember, email: e.target.value})}
-              margin="normal"
-              required
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-            />
-            <TextField
-              fullWidth
-              label="Company"
-              value={newMember.company}
-              onChange={(e) => setNewMember({...newMember, company: e.target.value})}
-              margin="normal"
-              required
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-            />
-            <TextField
-              fullWidth
-              label="Role/Title"
-              value={newMember.role}
-              onChange={(e) => setNewMember({...newMember, role: e.target.value})}
-              margin="normal"
-              required
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-            />
-          </DialogContent>
-          <DialogActions sx={{ p: 3, borderTop: '1px solid #e2e8f0' }}>
-            <Button 
-              onClick={() => setOpen(false)}
-              sx={{ textTransform: 'none' }}
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleAddMember} 
-              variant="contained"
-              sx={{ textTransform: 'none', fontWeight: 600 }}
-            >
-              Add Member
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
-    </Box>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                    Top Expertise:
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
+                    {member.expertise && member.expertise.slice(0, 2).map((exp, index) => (
+                      <Chip 
+                        key={index} 
+                        label={exp} 
+                        size="small" 
+                        sx={{ 
+                          backgroundColor: '#10b981',
+                          color: 'white',
+                          fontSize: '0.7rem'
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#3b82f6' }}>
+                        {member.connectionsMade || 0}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#64748b' }}>
+                        Connections
+                      </Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#10b981' }}>
+                        {member.eventsAttended || 0}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#64748b' }}>
+                        Events
+                      </Typography>
+                    </Box>
+                  </Box>
+                  
+                  <Box sx={{ width: 60 }}>
+                    <Typography variant="caption" sx={{ color: '#64748b' }}>
+                      Profile: {member.profileCompleteness || 0}%
+                    </Typography>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={member.profileCompleteness || 0} 
+                      sx={{ height: 4, borderRadius: 2, mt: 0.5 }}
+                    />
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Simple Add Member Dialog */}
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Add New Member</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ color: '#64748b', mb: 2 }}>
+            Enhanced member profiles with skills and expertise coming soon!
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 

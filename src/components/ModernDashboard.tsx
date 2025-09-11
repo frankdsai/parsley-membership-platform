@@ -39,14 +39,16 @@ import {
 import EnhancedAIChat from './EnhancedAIChat';
 import Members from './Members';
 import Events from './Events';
+import EngagementDashboard from './EngagementDashboard';
 
-const ModernDashboard = () => {
+const ModernDashboard = ({ onNavigate, userRole }: { onNavigate?: (view: string) => void; userRole?: string }) => {
   const [selectedTab, setSelectedTab] = useState('feed');
 
   const sidebarItems = [
     { id: 'feed', icon: <Dashboard />, label: 'Feed', active: true },
     { id: 'members', icon: <People />, label: 'Members' },
     { id: 'events', icon: <Event />, label: 'Events' },
+    { id: 'analytics', icon: <TrendingUp />, label: 'Analytics' },
     { id: 'priorities', icon: <TrendingUp />, label: 'Your Priorities' },
     { id: 'goals', icon: <Psychology />, label: 'Your Goals' },
     { id: 'review', icon: <BusinessCenter />, label: 'For Review' },
@@ -79,13 +81,20 @@ const ModernDashboard = () => {
         return <Events />;
     }
 
+    if (selectedTab === 'analytics') {
+        return <EngagementDashboard />;
+    }
+
     return (
       <Box sx={{ p: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
-            Today ↗
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+              Today ↗
+            </Typography>
+            <Chip label="Admin View" color="primary" size="small" />
+        </Box>
           <Typography variant="body1" sx={{ color: '#64748b', mb: 3 }}>
             Here's a recap of your membership objectives, goals and activities to help get your day started.
           </Typography>
