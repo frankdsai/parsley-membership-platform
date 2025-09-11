@@ -40,6 +40,7 @@ import EnhancedAIChat from './EnhancedAIChat';
 import Members from './Members';
 import Events from './Events';
 import EngagementDashboard from './EngagementDashboard';
+import SearchAnalytics from './SearchAnalytics';
 
 const ModernDashboard = ({ onNavigate, userRole }: { onNavigate?: (view: string) => void; userRole?: string }) => {
   const [selectedTab, setSelectedTab] = useState('feed');
@@ -49,6 +50,7 @@ const ModernDashboard = ({ onNavigate, userRole }: { onNavigate?: (view: string)
     { id: 'members', icon: <People />, label: 'Members' },
     { id: 'events', icon: <Event />, label: 'Events' },
     { id: 'analytics', icon: <TrendingUp />, label: 'Analytics' },
+    { id: 'search-analytics', icon: <Search />, label: 'Search Analytics' },
     { id: 'priorities', icon: <TrendingUp />, label: 'Your Priorities' },
     { id: 'goals', icon: <Psychology />, label: 'Your Goals' },
     { id: 'review', icon: <BusinessCenter />, label: 'For Review' },
@@ -83,6 +85,10 @@ const ModernDashboard = ({ onNavigate, userRole }: { onNavigate?: (view: string)
 
     if (selectedTab === 'analytics') {
         return <EngagementDashboard />;
+    }
+
+    if (selectedTab === 'search-analytics') {
+        return <SearchAnalytics />;
     }
 
     return (
