@@ -1,3 +1,4 @@
+import DemoLogin from './DemoLogin';
 import React, { useState } from 'react';
 import { 
   Container, 
@@ -91,6 +92,7 @@ const Login: React.FC = () => {
           </Button>
         </Box>
       </Paper>
+      <DemoLogin />
     </Container>
   );
 };

@@ -17,26 +17,48 @@ export const useUserRole = (user: User | null) => {
       }
 
       try {
-        const userDoc = await getDoc(doc(db, 'userProfiles', user.uid));
+        // Create demo profile based on email for easy role switching
+        let role: 'admin' | 'executive' | 'member' = 'member';
+        let displayName = 'Demo User';
         
-        if (userDoc.exists()) {
-          setUserProfile(userDoc.data() as UserProfile);
-        } else {
-          // Create default profile for new users
-          const defaultProfile: UserProfile = {
-            uid: user.uid,
-            email: user.email || '',
-            role: 'member', // Default role
-            displayName: user.displayName || '',
-            joinDate: new Date().toISOString(),
-            lastActive: new Date().toISOString()
-          };
-          
-          await setDoc(doc(db, 'userProfiles', user.uid), defaultProfile);
-          setUserProfile(defaultProfile);
+        if (user.email?.includes('admin')) {
+          role = 'admin';
+          displayName = 'Admin User';
+        } else if (user.email?.includes('executive')) {
+          role = 'executive';  
+          displayName = 'Executive User';
+        } else if (user.email?.includes('member')) {
+          role = 'member';
+          displayName = 'Member User';
         }
+
+        const defaultProfile: UserProfile = {
+          uid: user.uid,
+          email: user.email || '',
+          role: role,
+          displayName: displayName,
+          organization: 'Demo Organization',
+          joinDate: new Date().toISOString(),
+          lastActive: new Date().toISOString(),
+          skills: ['Demo Skill'],
+          expertise: ['Demo Expertise'],
+          interests: ['Demo Interest'],
+          bio: `Demo ${role} profile for testing different user experiences.`,
+          goals: ['Demo goal'],
+          yearsExperience: 5,
+          industry: 'Technology',
+          location: 'Demo City',
+          profileCompleteness: 85,
+          expertiseLevel: 'Intermediate',
+          networkingPreferences: ['Demo Preference'],
+          searchHistory: ['demo search'],
+          connectionsMade: 10,
+          eventsAttended: 5
+        };
+        
+        setUserProfile(defaultProfile);
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('Error creating user profile:', error);
       } finally {
         setLoading(false);
       }
@@ -50,7 +72,6 @@ export const useUserRole = (user: User | null) => {
 
     try {
       const updatedProfile = { ...userProfile, role: newRole };
-      await setDoc(doc(db, 'userProfiles', user.uid), updatedProfile);
       setUserProfile(updatedProfile);
     } catch (error) {
       console.error('Error updating user role:', error);

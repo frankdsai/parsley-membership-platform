@@ -42,7 +42,7 @@ import Events from './Events';
 import EngagementDashboard from './EngagementDashboard';
 import SearchAnalytics from './SearchAnalytics';
 
-const ModernDashboard = ({ onNavigate, userRole }: { onNavigate?: (view: string) => void; userRole?: string }) => {
+const ModernDashboard = () => {
   const [selectedTab, setSelectedTab] = useState('feed');
 
   const sidebarItems = [
@@ -95,12 +95,9 @@ const ModernDashboard = ({ onNavigate, userRole }: { onNavigate?: (view: string)
       <Box sx={{ p: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
-              Today ↗
-            </Typography>
-            <Chip label="Admin View" color="primary" size="small" />
-        </Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+            Today ↗
+          </Typography>
           <Typography variant="body1" sx={{ color: '#64748b', mb: 3 }}>
             Here's a recap of your membership objectives, goals and activities to help get your day started.
           </Typography>
