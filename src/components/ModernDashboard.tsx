@@ -95,9 +95,40 @@ const ModernDashboard = () => {
       <Box sx={{ p: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
-            Today ↗
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b' }}>
+              Today ↗
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Chip 
+                label="Admin View" 
+                color="primary" 
+                size="small" 
+                sx={{ backgroundColor: '#3b82f6', color: 'white', fontWeight: 600 }}
+              />
+              <IconButton 
+                size="small" 
+                onClick={async () => {
+                  try {
+                    const { signOut } = await import('firebase/auth');
+                    const { auth } = await import('../firebase');
+                    await signOut(auth);
+                  } catch (error) {
+                    console.error('Error signing out:', error);
+                  }
+                }}
+                sx={{ 
+                  backgroundColor: '#f1f5f9', 
+                  '&:hover': { backgroundColor: '#e2e8f0' },
+                  border: '1px solid #e2e8f0'
+                }}
+              >
+                <Box sx={{ transform: 'rotate(180deg)' }}>
+                  →
+                </Box>
+              </IconButton>
+            </Box>
+          </Box>
           <Typography variant="body1" sx={{ color: '#64748b', mb: 3 }}>
             Here's a recap of your membership objectives, goals and activities to help get your day started.
           </Typography>
