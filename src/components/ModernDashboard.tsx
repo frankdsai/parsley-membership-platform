@@ -41,6 +41,8 @@ import Members from './Members';
 import Events from './Events';
 import EngagementDashboard from './EngagementDashboard';
 import SearchAnalytics from './SearchAnalytics';
+import { Science } from '@mui/icons-material'; // For RAG testing icon
+import RAGTestingDashboard from './rag/RAGTestingDashboard';
 
 const ModernDashboard = () => {
   const [selectedTab, setSelectedTab] = useState('feed');
@@ -51,6 +53,7 @@ const ModernDashboard = () => {
     { id: 'events', icon: <Event />, label: 'Events' },
     { id: 'analytics', icon: <TrendingUp />, label: 'Analytics' },
     { id: 'search-analytics', icon: <Search />, label: 'Search Analytics' },
+    { id: 'rag-testing', icon: <Science />, label: '🧪 RAG Testing' },
     { id: 'priorities', icon: <TrendingUp />, label: 'Your Priorities' },
     { id: 'goals', icon: <Psychology />, label: 'Your Goals' },
     { id: 'review', icon: <BusinessCenter />, label: 'For Review' },
@@ -89,6 +92,10 @@ const ModernDashboard = () => {
 
     if (selectedTab === 'search-analytics') {
         return <SearchAnalytics />;
+    }
+
+    if (selectedTab === 'rag-testing') {
+  return <RAGTestingDashboard />;
     }
 
     return (

@@ -5,6 +5,10 @@ import ModernDashboard from '../ModernDashboard';
 import Members from '../Members';
 import Events from '../Events';
 import EnhancedAIChat from '../EnhancedAIChat';
+import { getFeatureFlags } from '../../config/featureFlags';
+
+// Import RAG components
+import RAGTestingDashboard from '../rag/RAGTestingDashboard';
 
 interface AdminDashboardProps {
   user: User;
@@ -13,6 +17,7 @@ interface AdminDashboardProps {
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, userProfile }) => {
   const [currentView, setCurrentView] = useState('dashboard');
+  const flags = getFeatureFlags();
 
   const renderContent = () => {
     switch (currentView) {
@@ -22,6 +27,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, userProfile }) =>
         return <Events />;
       case 'chat':
         return <EnhancedAIChat />;
+      case 'rag-testing':
+        return <RAGTestingDashboard />;
       default:
         return <ModernDashboard onNavigate={setCurrentView} userRole="admin" />;
     }
