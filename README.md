@@ -44,3 +44,16 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## RAG (Retrieval-Augmented Generation) Features
+
+Parsley now includes advanced RAG capabilities for intelligent document search and contextual AI responses:
+
+- **Document Upload**: Process organizational documents into searchable knowledge base
+- **Semantic Search**: Find relevant content across multiple documents  
+- **Context-Aware Responses**: AI answers backed by your organization's knowledge
+- **Source Citations**: Transparent sourcing with relevance scoring
+- **Side-by-Side Testing**: Compare original vs RAG-enhanced responses
+
+Access via: Dashboard → RAG Testing
+
