@@ -6,6 +6,7 @@ import {
   CardContent,
   Grid,
   Chip,
+  Button,
   List,
   ListItem,
   ListItemText,
@@ -16,9 +17,27 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Alert,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider
 } from '@mui/material';
-import { TrendingUp, Search, People, Lightbulb } from '@mui/icons-material';
+import { 
+  TrendingUp, 
+  Search, 
+  People, 
+  Lightbulb, 
+  Psychology,
+  AutoAwesome,
+  Close,
+  Analytics,
+  NetworkCheck,
+  Groups
+} from '@mui/icons-material';
 
 interface SearchTrend {
   query: string;
@@ -34,33 +53,98 @@ interface PopularTopic {
   growth: number;
 }
 
-const SearchAnalytics: React.FC = () => {
+interface AIInsight {
+  id: string;
+  type: 'opportunity' | 'gap' | 'trend';
+  title: string;
+  description: string;
+  actionable: boolean;
+  suggestions: string[];
+}
+
+interface SearchAnalyticsProps {
+  onNavigateToWorkspace?: () => void;
+  onNavigateToNetwork?: () => void;
+  onNavigateToAI?: () => void;
+}
+
+const SearchAnalytics: React.FC<SearchAnalyticsProps> = ({ 
+  onNavigateToWorkspace, 
+  onNavigateToNetwork, 
+  onNavigateToAI 
+}) => {
   const [searchTrends, setSearchTrends] = useState<SearchTrend[]>([]);
   const [popularTopics, setPopularTopics] = useState<PopularTopic[]>([]);
+  const [aiInsights, setAIInsights] = useState<AIInsight[]>([]);
+  const [selectedInsight, setSelectedInsight] = useState<AIInsight | null>(null);
+  const [weeklySpike, setWeeklySpike] = useState<boolean>(true);
 
   useEffect(() => {
-    // Sample search analytics data
+    // Sample search analytics data with more realistic trends
     const sampleTrends: SearchTrend[] = [
       { query: 'AI product strategy', count: 45, trend: 'up', category: 'expertise' },
+      { query: 'machine learning implementation', count: 38, trend: 'up', category: 'expertise' },
       { query: 'kubernetes best practices', count: 32, trend: 'up', category: 'expertise' },
       { query: 'fintech partnerships', count: 28, trend: 'stable', category: 'expertise' },
       { query: 'digital transformation', count: 23, trend: 'up', category: 'expertise' },
       { query: 'cloud architecture', count: 19, trend: 'down', category: 'expertise' },
       { query: 'blockchain regulations', count: 16, trend: 'stable', category: 'expertise' },
-      { query: 'product management', count: 34, trend: 'up', category: 'member' },
-      { query: 'startup mentoring', count: 21, trend: 'up', category: 'member' }
+      { query: 'product management mentoring', count: 34, trend: 'up', category: 'member' },
+      { query: 'startup advisor networking', count: 21, trend: 'up', category: 'member' },
+      { query: 'senior software engineer', count: 29, trend: 'up', category: 'member' }
     ];
 
     const sampleTopics: PopularTopic[] = [
-      { topic: 'Artificial Intelligence', searches: 89, members: 12, growth: 25 },
-      { topic: 'Cloud Computing', searches: 67, members: 8, growth: 15 },
+      { topic: 'Artificial Intelligence', searches: 89, members: 12, growth: 45 },
+      { topic: 'Machine Learning', searches: 73, members: 8, growth: 38 },
+      { topic: 'Cloud Computing', searches: 67, members: 15, growth: 15 },
       { topic: 'Financial Technology', searches: 54, members: 6, growth: 35 },
       { topic: 'Digital Transformation', searches: 43, members: 9, growth: 18 },
       { topic: 'Product Strategy', searches: 38, members: 7, growth: 22 }
     ];
 
+    const sampleInsights: AIInsight[] = [
+      {
+        id: '1',
+        type: 'trend',
+        title: 'Unusual AI/ML Query Spike',
+        description: '45% increase in AI and Machine Learning related searches this week. Technical skills category showing highest engagement.',
+        actionable: true,
+        suggestions: [
+          'Create AI/ML special interest group',
+          'Host "AI for Product Managers" workshop',
+          'Connect blockchain experts with AI researchers'
+        ]
+      },
+      {
+        id: '2',
+        type: 'gap',
+        title: 'FinTech Expert Shortage',
+        description: 'High demand for FinTech expertise (54 searches) but only 6 expert members available. Critical skill gap identified.',
+        actionable: true,
+        suggestions: [
+          'Recruit FinTech executives from partner organizations',
+          'Create FinTech expertise development program',
+          'Partner with financial institutions for expert exchanges'
+        ]
+      },
+      {
+        id: '3',
+        type: 'opportunity',
+        title: 'Product Management Network Expansion',
+        description: '23 members searching for product management expertise but only 4 are connected. High networking potential.',
+        actionable: true,
+        suggestions: [
+          'Create "Connect Blockchain Community" initiative',
+          'Host product management roundtable',
+          'Introduce peer mentoring program'
+        ]
+      }
+    ];
+
     setSearchTrends(sampleTrends);
     setPopularTopics(sampleTopics);
+    setAIInsights(sampleInsights);
   }, []);
 
   const getTrendIcon = (trend: string) => {
@@ -80,16 +164,128 @@ const SearchAnalytics: React.FC = () => {
     }
   };
 
+  const getInsightColor = (type: string) => {
+    switch (type) {
+      case 'opportunity': return '#10b981';
+      case 'gap': return '#ef4444';
+      case 'trend': return '#3b82f6';
+      default: return '#64748b';
+    }
+  };
+
+  const handleCreateInitiative = (insight: AIInsight) => {
+    // Simulate creating initiative
+    alert(`Creating initiative: "${insight.suggestions[0]}" - This would integrate with your project management system.`);
+    setSelectedInsight(null);
+  };
+
+  const handleOpenWorkspace = () => {
+    if (onNavigateToWorkspace) {
+      onNavigateToWorkspace();
+    } else {
+      alert('Opening Community Analytics workspace with this week\'s search data loaded...');
+    }
+  };
+
+  const handleViewNetwork = () => {
+    if (onNavigateToNetwork) {
+      onNavigateToNetwork();
+    } else {
+      alert('Navigating to Network view with blockchain community pre-filtered...');
+    }
+  };
+
   return (
     <Box sx={{ p: 4, backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      {/* Priority Alert - Weekly Insights */}
+      {weeklySpike && (
+        <Alert 
+          severity="info" 
+          sx={{ mb: 3, borderRadius: 2 }}
+          action={
+            <IconButton size="small" onClick={() => setWeeklySpike(false)}>
+              <Close />
+            </IconButton>
+          }
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <AutoAwesome sx={{ color: '#3b82f6' }} />
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              Weekly search insights ready - unusual spike in AI/ML queries (+45%)
+            </Typography>
+          </Box>
+        </Alert>
+      )}
+
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
-          Search Analytics
+          Semantic Search Analytics
         </Typography>
         <Typography variant="body1" sx={{ color: '#64748b' }}>
           Understand what your community is searching for and identify trending topics
         </Typography>
       </Box>
+
+      {/* AI-Powered Quick Actions */}
+      <Card sx={{ mb: 4, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <Psychology sx={{ color: '#8b5cf6' }} />
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              AI Assistant Suggestions
+            </Typography>
+          </Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={4}>
+              <Button
+                variant="outlined"
+                fullWidth
+                startIcon={<Analytics />}
+                onClick={handleOpenWorkspace}
+                sx={{ 
+                  py: 2, 
+                  borderColor: '#3b82f6', 
+                  color: '#3b82f6',
+                  '&:hover': { backgroundColor: '#eff6ff' }
+                }}
+              >
+                Open Analytics Workspace
+              </Button>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Button
+                variant="outlined"
+                fullWidth
+                startIcon={<NetworkCheck />}
+                onClick={handleViewNetwork}
+                sx={{ 
+                  py: 2, 
+                  borderColor: '#10b981', 
+                  color: '#10b981',
+                  '&:hover': { backgroundColor: '#f0fdf4' }
+                }}
+              >
+                View Network Opportunities
+              </Button>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Button
+                variant="contained"
+                fullWidth
+                startIcon={<Groups />}
+                onClick={() => setSelectedInsight(aiInsights[2])}
+                sx={{ 
+                  py: 2, 
+                  backgroundColor: '#8b5cf6',
+                  '&:hover': { backgroundColor: '#7c3aed' }
+                }}
+              >
+                Create Networking Initiative
+              </Button>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       {/* Key Metrics */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -103,6 +299,9 @@ const SearchAnalytics: React.FC = () => {
               <Typography variant="body2" sx={{ color: '#64748b' }}>
                 Total Searches This Week
               </Typography>
+              <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                +24% from last week
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -112,10 +311,13 @@ const SearchAnalytics: React.FC = () => {
             <CardContent sx={{ textAlign: 'center' }}>
               <TrendingUp sx={{ fontSize: 40, color: '#10b981', mb: 1 }} />
               <Typography variant="h3" sx={{ fontWeight: 700, color: '#10b981' }}>
-                23%
+                45%
               </Typography>
               <Typography variant="body2" sx={{ color: '#64748b' }}>
-                Growth vs Last Week
+                Technical Skills Searches
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                Highest category
               </Typography>
             </CardContent>
           </Card>
@@ -126,10 +328,13 @@ const SearchAnalytics: React.FC = () => {
             <CardContent sx={{ textAlign: 'center' }}>
               <People sx={{ fontSize: 40, color: '#f59e0b', mb: 1 }} />
               <Typography variant="h3" sx={{ fontWeight: 700, color: '#f59e0b' }}>
-                42
+                30%
               </Typography>
               <Typography variant="body2" sx={{ color: '#64748b' }}>
-                Active Searchers
+                Industry Connections
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#f59e0b', fontWeight: 600 }}>
+                Growing trend
               </Typography>
             </CardContent>
           </Card>
@@ -140,45 +345,136 @@ const SearchAnalytics: React.FC = () => {
             <CardContent sx={{ textAlign: 'center' }}>
               <Lightbulb sx={{ fontSize: 40, color: '#8b5cf6', mb: 1 }} />
               <Typography variant="h3" sx={{ fontWeight: 700, color: '#8b5cf6' }}>
-                8
+                23
               </Typography>
               <Typography variant="body2" sx={{ color: '#64748b' }}>
-                Trending Topics
+                Unconnected Members
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#ef4444', fontWeight: 600 }}>
+                Networking opportunity
               </Typography>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
-      <Grid container spacing={3}>
-        {/* Popular Search Terms */}
-        <Grid item xs={12} md={6}>
+      {/* AI Insights */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12}>
           <Card sx={{ borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 3 }}>
-                Trending Search Terms
+            <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                AI-Generated Insights & Recommendations
               </Typography>
-              
-              <List>
-                {searchTrends.slice(0, 8).map((trend, index) => (
-                  <ListItem key={index} sx={{ px: 0, py: 1 }}>
-                    <ListItemText
-                      primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body1" sx={{ flex: 1, fontWeight: 500 }}>
-                            {trend.query}
-                          </Typography>
+              <Grid container spacing={3}>
+                {aiInsights.map((insight) => (
+                  <Grid item xs={12} md={4} key={insight.id}>
+                    <Box 
+                      sx={{ 
+                        p: 3, 
+                        backgroundColor: `${getInsightColor(insight.type)}10`, 
+                        borderRadius: 2,
+                        borderLeft: `4px solid ${getInsightColor(insight.type)}`,
+                        cursor: 'pointer',
+                        '&:hover': { backgroundColor: `${getInsightColor(insight.type)}20` }
+                      }}
+                      onClick={() => setSelectedInsight(insight)}
+                    >
+                      <Typography variant="subtitle2" sx={{ color: getInsightColor(insight.type), fontWeight: 600, mb: 1 }}>
+                        {insight.title}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#64748b', mb: 2 }}>
+                        {insight.description}
+                      </Typography>
+                      {insight.actionable && (
+                        <Chip 
+                          label="Action Required" 
+                          size="small" 
+                          sx={{ backgroundColor: getInsightColor(insight.type), color: 'white' }}
+                        />
+                      )}
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Search Trends Table */}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <Card sx={{ borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                Trending Search Queries
+              </Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Query</TableCell>
+                      <TableCell>Category</TableCell>
+                      <TableCell align="right">Count</TableCell>
+                      <TableCell align="center">Trend</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {searchTrends.map((trend, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{trend.query}</TableCell>
+                        <TableCell>
                           <Chip 
                             label={trend.category} 
-                            size="small"
+                            size="small" 
                             sx={{ 
-                              backgroundColor: getCategoryColor(trend.category) + '20',
-                              color: getCategoryColor(trend.category),
-                              fontSize: '0.7rem'
+                              backgroundColor: getCategoryColor(trend.category),
+                              color: 'white',
+                              fontSize: '0.75rem'
                             }}
                           />
-                          <Typography variant="body2" sx={{ minWidth: 60, textAlign: 'right' }}>
-                            {getTrendIcon(trend.trend)} {trend.count}
+                        </TableCell>
+                        <TableCell align="right">{trend.count}</TableCell>
+                        <TableCell align="center">{getTrendIcon(trend.trend)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                Popular Topics
+              </Typography>
+              <List>
+                {popularTopics.map((topic, index) => (
+                  <ListItem key={index} sx={{ px: 0 }}>
+                    <ListItemText
+                      primary={topic.topic}
+                      secondary={
+                        <Box>
+                          <Typography variant="body2" sx={{ color: '#64748b' }}>
+                            {topic.searches} searches • {topic.members} members
+                          </Typography>
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={topic.growth} 
+                            sx={{ 
+                              mt: 1, 
+                              backgroundColor: '#e2e8f0',
+                              '& .MuiLinearProgress-bar': {
+                                backgroundColor: topic.growth > 30 ? '#10b981' : '#3b82f6'
+                              }
+                            }}
+                          />
+                          <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600, mt: 0.5 }}>
+                            +{topic.growth}% growth
                           </Typography>
                         </Box>
                       }
@@ -189,105 +485,52 @@ const SearchAnalytics: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
-
-        {/* Popular Topics */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 3 }}>
-                Popular Topics
-              </Typography>
-              
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Topic</TableCell>
-                      <TableCell align="right">Searches</TableCell>
-                      <TableCell align="right">Members</TableCell>
-                      <TableCell align="right">Growth</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {popularTopics.map((topic, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {topic.topic}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="body2">{topic.searches}</Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="body2">{topic.members}</Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          <Chip 
-                            label={`+${topic.growth}%`}
-                            size="small"
-                            sx={{ 
-                              backgroundColor: '#10b981',
-                              color: 'white',
-                              fontSize: '0.7rem'
-                            }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Search Insights */}
-        <Grid item xs={12}>
-          <Card sx={{ borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 3 }}>
-                Key Insights
-              </Typography>
-              
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <Box sx={{ p: 2, backgroundColor: '#dbeafe', borderRadius: 2 }}>
-                    <Typography variant="subtitle2" sx={{ color: '#1e40af', fontWeight: 600 }}>
-                      Rising Interest
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#1e40af' }}>
-                      AI product strategy searches up 45% this week. Consider hosting an AI workshop.
-                    </Typography>
-                  </Box>
-                </Grid>
-                
-                <Grid item xs={12} md={4}>
-                  <Box sx={{ p: 2, backgroundColor: '#dcfce7', borderRadius: 2 }}>
-                    <Typography variant="subtitle2" sx={{ color: '#166534', fontWeight: 600 }}>
-                      Expert Gap
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#166534' }}>
-                      High demand for FinTech expertise but only 6 expert members. Recruit more experts.
-                    </Typography>
-                  </Box>
-                </Grid>
-                
-                <Grid item xs={12} md={4}>
-                  <Box sx={{ p: 2, backgroundColor: '#fef3c7', borderRadius: 2 }}>
-                    <Typography variant="subtitle2" sx={{ color: '#92400e', fontWeight: 600 }}>
-                      Networking Opportunity
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#92400e' }}>
-                      34 searches for product management. Connect Sarah Chen with other PMs.
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
       </Grid>
+
+      {/* AI Insight Detail Modal */}
+      <Dialog 
+        open={!!selectedInsight} 
+        onClose={() => setSelectedInsight(null)}
+        maxWidth="md"
+        fullWidth
+      >
+        {selectedInsight && (
+          <>
+            <DialogTitle>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <AutoAwesome sx={{ color: getInsightColor(selectedInsight.type) }} />
+                {selectedInsight.title}
+              </Box>
+            </DialogTitle>
+            <DialogContent>
+              <Typography variant="body1" sx={{ mb: 3 }}>
+                {selectedInsight.description}
+              </Typography>
+              <Divider sx={{ mb: 3 }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                Recommended Actions:
+              </Typography>
+              <List>
+                {selectedInsight.suggestions.map((suggestion, index) => (
+                  <ListItem key={index}>
+                    <ListItemText primary={`${index + 1}. ${suggestion}`} />
+                  </ListItem>
+                ))}
+              </List>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setSelectedInsight(null)}>Cancel</Button>
+              <Button 
+                variant="contained" 
+                onClick={() => handleCreateInitiative(selectedInsight)}
+                sx={{ backgroundColor: getInsightColor(selectedInsight.type) }}
+              >
+                Create Initiative
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
     </Box>
   );
 };
