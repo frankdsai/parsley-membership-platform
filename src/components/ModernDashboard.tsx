@@ -43,6 +43,7 @@ import EngagementDashboard from './EngagementDashboard';
 import SearchAnalytics from './SearchAnalytics';
 import { Science } from '@mui/icons-material'; // For RAG testing icon
 import RAGTestingDashboard from './rag/RAGTestingDashboard';
+import SlidingAIPanel from './SlidingAIPanel';
 
 const ModernDashboard = () => {
   const [selectedTab, setSelectedTab] = useState('feed');
@@ -95,7 +96,7 @@ const ModernDashboard = () => {
     }
 
     if (selectedTab === 'rag-testing') {
-  return <RAGTestingDashboard />;
+      return <RAGTestingDashboard />;
     }
 
     return (
@@ -435,7 +436,7 @@ const ModernDashboard = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#f8fafc' }}>
+    <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#f8fafc', position: 'relative' }}>
       {/* Left Sidebar */}
       <Box sx={{ width: 280, backgroundColor: 'white', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ p: 3, borderBottom: '1px solid #e2e8f0' }}>
@@ -498,6 +499,16 @@ const ModernDashboard = () => {
       <Box sx={{ flex: 1, overflow: 'auto' }}>
         {renderMainContent()}
       </Box>
+
+      {/* Sliding AI Panel - APPROVED ADDITION */}
+      <SlidingAIPanel
+        currentPage={selectedTab}
+        pageData={{}}
+        onNavigate={(dest, data) => console.log('Navigate:', dest, data)}
+        onCreateEvent={(event) => console.log('Create Event:', event)}
+        onCreateInitiative={(init) => console.log('Create Initiative:', init)}
+        onCreateActivity={(activity) => console.log('Create Activity:', activity)}
+      />
     </Box>
   );
 };
