@@ -15,7 +15,7 @@ import {
   ChevronRight,
   Psychology 
 } from '@mui/icons-material';
-import SmartAIChat from './ContextAwareAIChat';
+import RealDataAIChat from './ContextAwareAIChat';
 
 interface SlidingAIPanelProps {
   currentPage: string;
@@ -190,7 +190,7 @@ const SlidingAIPanel: React.FC<SlidingAIPanelProps> = ({
 
           {/* AI Chat Content */}
           <Box sx={{ flex: 1, overflow: 'hidden' }}>
-            <SmartAIChat
+            <RealDataAIChat
               context={{
                 currentPage,
                 pageData,
@@ -200,7 +200,7 @@ const SlidingAIPanel: React.FC<SlidingAIPanelProps> = ({
               onCreateEvent={handleCreateEvent}
               onCreateInitiative={handleCreateInitiative}
               onCreateActivity={handleCreateActivity}
-              isWidget={false}
+              isWidget={true}
             />
           </Box>
 
