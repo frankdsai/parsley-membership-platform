@@ -1,0 +1,17 @@
+/* src/styles/dashboard.css */
+.improved-dashboard * {
+  box-sizing: border-box;
+}
+
+.improved-dashboard {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Override Material-UI defaults */
+.improved-dashboard .MuiPaper-root {
+  box-shadow: none !important;
+}
+
+.improved-dashboard .MuiChip-root {
+  font-weight: 600 !important;
+}

@@ -6,13 +6,13 @@ import Auth from './components/Auth';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#3b82f6', // Modern blue
+      main: '#8B5CF6', // Purple from your palette
     },
     secondary: {
-      main: '#10b981', // Modern green
+      main: '#14B8A6', // Teal from your palette
     },
     background: {
-      default: '#f8fafc',
+      default: '#F8FAFC',
     },
   },
   typography: {
@@ -20,6 +20,15 @@ const theme = createTheme({
   },
   shape: {
     borderRadius: 12,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
   },
 });
 
